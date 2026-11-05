@@ -1,0 +1,241 @@
+{
+  "info": {
+    "_postman_id": "ac16a7df-fc2d-4342-8abe-c977716470c1",
+    "name": "API Test Library",
+    "description": "https://library-api.postmanlabs.com",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "59454821",
+    "_collection_link": "https://go.postman.co/collection/59454821-ac16a7df-fc2d-4342-8abe-c977716470c1?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "GetBooks",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseURL}}/books",
+          "host": [
+            "{{baseURL}}"
+          ],
+          "path": [
+            "books"
+          ],
+          "query": [
+            {
+              "key": "genre",
+              "value": "fiction",
+              "description": "a genre to filter for",
+              "disabled": true
+            },
+            {
+              "key": "checkedOut",
+              "value": "false",
+              "description": "a value true or false",
+              "disabled": true
+            },
+            {
+              "key": "search",
+              "value": "borges",
+              "description": "a search term to match against author or title",
+              "disabled": true
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "FilterBooks",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "\n// 1. Status code is 200\npm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});\n\n// 2. Response is JSON (Content-Type header contains application/json)\npm.test(\"Response is JSON\", function () {\n    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\n});\n\n// 3. Response body is an array\npm.test(\"Response body is an array\", function () {\n    const jsonData = pm.response.json();\n    pm.expect(jsonData).to.be.an(\"array\");\n});\n\n// 4-8. Per-item validations\npm.test(\"Each book has required fields and correct types\", function () {\n    const books = pm.response.json();\n    books.forEach(function (book) {\n        // 4. Each book has required fields\n        pm.expect(book).to.have.all.keys(\"id\", \"title\", \"author\", \"genre\", \"yearPublished\", \"checkedOut\", \"isPermanentCollection\", \"createdAt\");\n\n        // 5. Each book's id is a non-empty string\n        pm.expect(book.id).to.be.a(\"string\").and.to.have.length.above(0);\n\n        // 6. Each book's title is a non-empty string\n        pm.expect(book.title).to.be.a(\"string\").and.to.have.length.above(0);\n\n        // 7. Each book's yearPublished is a number\n        pm.expect(book.yearPublished).to.be.a(\"number\");\n\n        // 8. Each book's checkedOut is a boolean\n        pm.expect(book.checkedOut).to.be.a(\"boolean\");\n    });\n});\n\n// 9. Response time is under 2000ms\npm.test(\"Response time is under 2000ms\", function () {\n    pm.expect(pm.response.responseTime).to.be.below(2000);\n});\n"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseURL}}/books?author=Rkish",
+          "host": [
+            "{{baseURL}}"
+          ],
+          "path": [
+            "books"
+          ],
+          "query": [
+            {
+              "key": "author",
+              "value": "Rkish"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Path variables",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseURL}}/:{{id}}",
+          "host": [
+            "{{baseURL}}"
+          ],
+          "path": [
+            ":{{id}}"
+          ],
+          "query": [
+            {
+              "key": "genre",
+              "value": "fiction",
+              "description": "a genre to filter for",
+              "disabled": true
+            },
+            {
+              "key": "checkedOut",
+              "value": "false",
+              "description": "a value true or false",
+              "disabled": true
+            },
+            {
+              "key": "search",
+              "value": "borges",
+              "description": "a search term to match against author or title",
+              "disabled": true
+            }
+          ],
+          "variable": [
+            {
+              "key": "{{id}}",
+              "value": "5e9707ab-2ef8-43cf-866e-d39ddaf587a8"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Post your own book",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const id = pm.response.json().id;\r\npm.collectionVariables.set(\"bookId\", id);\r\n\r\npm.test(\"Status code is 201\", function () {\r\n    pm.response.to.have.status(201);\r\n});"
+            ]
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "var author = \"Ramu Gande\"\r\nconsole.log(\"Author which is going to set is \"+author)\r\nconsole.error(\"Author which is going to set is \"+author)\r\nconsole.warn(\"Author which is going to set is \"+author)\r\nconsole.info(\"Author which is going to set is \" + author)\r\npm.globals.set(\"author\", author)\r\n\r\nvar genre = \"Computers\"\r\nconsole.log(\"Genre which is going to set is \"+genre)\r\npm.globals.set(\"genre\", genre)\r\n"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "apikey",
+          "apikey": [
+            {
+              "key": "value",
+              "value": "postmanrulz",
+              "type": "string"
+            },
+            {
+              "key": "key",
+              "value": "api-key",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n        \"id\": \"ab150479-c340-4ac6-af86-489047db85kd\",\r\n        \"title\": \"computers 6\",\r\n        \"author\": \"{{author}}\",\r\n        \"genre\": \"computers\",\r\n        \"yearPublished\": 2025,\r\n        \"checkedOut\": true,\r\n        \"isPermanentCollection\": false,\r\n        \"createdAt\": \"2022-06-24T00:54:52.606Z\"\r\n    }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseURL}}/books?genre=fiction&checkedOut=false&search=borges",
+          "host": [
+            "{{baseURL}}"
+          ],
+          "path": [
+            "books"
+          ],
+          "query": [
+            {
+              "key": "genre",
+              "value": "fiction",
+              "description": "a genre to filter for"
+            },
+            {
+              "key": "checkedOut",
+              "value": "false",
+              "description": "a value true or false"
+            },
+            {
+              "key": "search",
+              "value": "borges",
+              "description": "a search term to match against author or title"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
